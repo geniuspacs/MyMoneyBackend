@@ -12,8 +12,10 @@ app.use(bodyParser.json());
 
 // cargamos las rutas
 var accounts_routes = require('./routes/accounts');
+var users_routes = require('./routes/users');
 
 // rutas base
-app.use('/api', accounts_routes);
+app.use('/api/accounts', accounts_routes);
+app.use('/api/users', users_routes);
 
 module.exports = app;
