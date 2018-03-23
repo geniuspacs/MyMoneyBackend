@@ -4,11 +4,13 @@ var Users = require('../models/users');
 var bcrypt = require('bcrypt-nodejs');
 
 function login(req, res) {
-    
+
     var params = req.body;
 
     var email = params.email;
     var password = params.password;
+
+
 
     Users.findOne({email: email.toLowerCase()}, (error, issetUser) => {
         if (error) {
@@ -17,9 +19,10 @@ function login(req, res) {
             });
         } else {
             if (issetUser) {
+                console.log(issetUser);
                 bcrypt.compare(password, issetUser.password, (err, check) => {
                     if (check) {
-                        res.status(200).send({issetUser});
+                        res.status(200).send({message: "Login correcto"});
                     } else {
                         res.status(400).send({
                             message: 'Contraseña incorrecta'
@@ -34,21 +37,20 @@ function login(req, res) {
         }
     });
 
-}
+};
 
-function registrar_usuario(req, res) {
+function registrar_usuario(req, res) {    
     var params = req.body;
 
     var user = new Users();
 
-    console.log(params);
-
-    if (params.name && params.surname && params.email && params.password && params.birth_date) {
-        user.name = params.name;
-        user.surname = params.surname;
-        user.email = params.email;
-        user.password = params.password; //bcrypt.hash(params.password);
-        user.birth_date = params.birth_date;
+    if (params.user) {
+        user.name = params.user.name;
+        user.surname = params.user.surname;
+        user.email = params.user.email;
+        user.password = bcrypt.hashSync(params.user.password); //bcrypt.hash(params.user.password);
+        user.birth_date = params.user.birth_date;
+        user.gender = params.user.gender;
         user.premium = false;
 
         user.save((error, userStored) => {
@@ -63,12 +65,11 @@ function registrar_usuario(req, res) {
                     });
                 } else {
                     res.status(200).send({
-                        account: userStored
+                        user: userStored
                     });
                 }
             }
         });
-
         
     } else {
         res.status(200).send({
